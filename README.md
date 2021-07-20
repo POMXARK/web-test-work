@@ -1,29 +1,17 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
-
-### What is this repository for? ###
-
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+This is a test work from Web Department of Unigine Company.
 
 ### How do I get set up? ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+* Install Docker Compose
+* Install Git
+* Clone this repository
+* Put ```127.0.0.1 url-shortener.loc``` into your hosts file
+* Run ```docker-compose up``` in the root of the repository
+* Go to ```http://url-shortener.loc``` in your browser
 
-### Contribution guidelines ###
+### How do I use it? ###
 
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+* To encode ```someurl``` you can use ```/encode-url?url=someurl``` endpoint
+* To decode ```somehash``` you can use ```/decode-url?hash=somehash``` endpoint

@@ -1,0 +1,34 @@
+version: '3'
+services:
+    unigine_test_nginx:
+        image: nginx:latest
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./hosts:/etc/nginx/conf.d
+            - ./www:/var/www
+            - ./logs/nginx:/var/log/nginx
+        links:
+            - unigine_test_php
+    unigine_test_php:
+        build: ./images/php
+        links:
+            - unigine_test_mysql
+        volumes:
+            - ./www:/var/www
+    unigine_test_mysql:
+        image: mariadb:latest
+        ports:
+            - "3306:3306"
+        volumes:
+         - ./etc/mysql:/etc/mysql
+         - ./logs/mysql:/var/log/mysql
+         - ./mysql:/var/lib/mysql
+         - ./mysql-files:/var/lib/mysql-files
+         - ./data/url_shortener.sql:/docker-entrypoint-initdb.d/dump.sql
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: url_shortener
+            MYSQL_USER: user
+            MYSQL_PASSWORD: user
