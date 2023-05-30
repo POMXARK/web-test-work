@@ -17,8 +17,14 @@ class UrlController extends AbstractController
     public function encodeUrl(Request $request): JsonResponse
     {
         $url = new Url();
+        $urlRepository = $this->getDoctrine()->getRepository(Url::class);
+        $existUrl = $urlRepository->findOneByUrl($request->get('hash'));
+        if ($existUrl) {
+            return $this->json([
+                               'hash' => $existUrl->getHash()
+                           ]);
+        }
         $url->setUrl($request->get('url'));
-
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($url);
         $entityManager->flush();
