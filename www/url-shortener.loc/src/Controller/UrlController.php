@@ -45,4 +45,23 @@ class UrlController extends AbstractController
             'url' => $url->getUrl()
         ]);
     }
+
+    /**
+     * @Route("/go-url", name="go_url")
+     */
+    public function goUrl(Request $request)
+    {
+        /** @var UrlRepository $urlRepository */
+        $urlRepository = $this->getDoctrine()->getRepository(Url::class);
+        $hash = $request->get('hash');
+        $url = $urlRepository->findOneByHash($hash);
+        if (empty ($url)) {
+            return $this->json([
+                                   'error' => 'Non-existent hash.'
+                               ]);
+        }
+        $routeName = $url->getUrl();
+
+        return $this->redirectToRoute($routeName, ['hash' => $hash]);
+    }
 }
