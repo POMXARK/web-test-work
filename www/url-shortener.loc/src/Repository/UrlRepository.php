@@ -6,6 +6,8 @@ use App\Entity\Url;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * @method Url|null find($id, $lockMode = null, $lockVersion = null)
@@ -23,7 +25,7 @@ class UrlRepository extends ServiceEntityRepository
     /**
      * @throws NonUniqueResultException
      */
-    public function findOneByHash(string $value): ?Url
+    public function findFirstByHash(string $value): ?Url
     {
         return $this->createQueryBuilder('u')
             ->andWhere('u.hash = :val')
@@ -42,7 +44,7 @@ class UrlRepository extends ServiceEntityRepository
      * @return Url|null
      * @throws NonUniqueResultException
      */
-    public function findOneByUrl(string $value): ?Url
+    public function findFirstByUrl(string $value): ?Url
     {
         return $this->createQueryBuilder('u')
             ->andWhere('u.url = :val')
@@ -51,5 +53,20 @@ class UrlRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult()
             ;
+    }
+
+    public function cacheHash(string $hash)
+    {
+        $cache = new FilesystemAdapter();
+        // The callable will only be executed on a cache miss.
+        $cache->get($hash, function (ItemInterface $item) {
+            $item->expiresAfter(60); // 60
+        });
+    }
+
+    public function availableHash(string $hash)
+    {
+        $cache = new FilesystemAdapter();
+        return $cache->getItem($hash)->isHit();
     }
 }
