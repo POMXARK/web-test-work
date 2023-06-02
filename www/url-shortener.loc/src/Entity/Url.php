@@ -27,6 +27,11 @@ class Url
      */
     private $hash;
 
+//    /**
+//     * @ORM\Column(type="string", length=14)
+//     */
+//    private $date;
+
     /**
      * @ORM\Column(name="created_date", type="datetime_immutable")
      */
