@@ -34,7 +34,6 @@ class SendUrlsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-
         $records = $this->em->getRepository(Url::class)->findAll();
         $out = [];
         $cache = new FilesystemAdapter();
@@ -47,13 +46,12 @@ class SendUrlsCommand extends Command
                                 'created_date' => $record->getCreatedDate()->format('YmdHis')
                     ];
                     $cache->get($cacheUrl, function (ItemInterface $item) {
-                        $item->expiresAfter(10); // 60
+                        $item->expiresAfter(360);
                     });
                 }
             } catch (Throwable $e){
                 dump($e);
             }
-            // The callable will only be executed on a cache miss.
         }
 
         if(empty($out)) {
@@ -62,10 +60,7 @@ class SendUrlsCommand extends Command
             $data = '{"data": ' . json_encode($out) . '}';
 
             $client = new Client(['base_uri' => $_ENV['STATISTICS_SERVICE_URL'], 'timeout'  => 2.0]);
-            $res = $client->request('POST', $this->route, ['body' => $data]);
-            dump($res->getStatusCode());
-            dump($res->getHeader('content-type')[0]);
-            dump($res->getBody()->getContents());
+            $client->request('POST', $this->route, ['body' => $data]);
         }
 
         return Command::SUCCESS;

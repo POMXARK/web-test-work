@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UrlRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UrlRepository::class)
@@ -19,11 +20,15 @@ class Url
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
+     * @Assert\Url
+     * @Assert\Regex("/^(http|https):\/\/[\w]+\.[\w]+/")
      */
     private $url;
 
     /**
-     * @ORM\Column(type="string", length=14)
+     * @ORM\Column(type="text")
+     * @Assert\Regex("/[0-9]+/")
      */
     private $hash;
 
@@ -34,6 +39,7 @@ class Url
 
     /**
      * @ORM\Column(name="created_date", type="datetime_immutable")
+     * @Assert\NotBlank
      */
     private $createdDate;
 
@@ -41,7 +47,7 @@ class Url
     {
         $date = new \DateTimeImmutable();
         $this->setCreatedDate($date);
-        $this->setHash($date->format('YmdHis'));
+        $this->setHash($date->format('YmdHis') . mt_rand());
     }
 
     public function getId(): ?int
@@ -54,7 +60,7 @@ class Url
         return $this->url;
     }
 
-    public function setUrl(string $url): self
+    public function setUrl(?string $url): self
     {
         $this->url = $url;
 
@@ -66,7 +72,7 @@ class Url
         return $this->hash;
     }
 
-    public function setHash(string $hash): self
+    public function setHash(?string $hash): self
     {
         $this->hash = $hash;
 

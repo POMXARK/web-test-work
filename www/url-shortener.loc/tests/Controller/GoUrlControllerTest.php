@@ -6,7 +6,7 @@ use App\Tests\DatabasePrimer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class UrlControllerTest extends WebTestCase
+class GoUrlControllerTest extends WebTestCase
 {
     /** @var EntityManagerInterface */
     protected $entityManager;
@@ -26,13 +26,17 @@ class UrlControllerTest extends WebTestCase
         $this->entityManager = null;
     }
 
-    public function testUrl(): void
+    /** @test  */
+    public function go_url_by_hash()
     {
+        $urlEncode = 'https://ya.ru';
         self::ensureKernelShutdown();
         $client = static::createClient();
-        $client->request('GET', '/encode-url?url=https://ya.ru');
-        $this->assertResponseStatusCodeSame($client->getResponse()->getStatusCode());
+
+        $client->request('GET', '/encode-url?url=' . $urlEncode);
         $hash = json_decode($client->getResponse()->getContent())->hash;
-        $this->assertIsNumeric($hash);
+
+        $client->request('GET', '/go-url?hash=' . $hash);
+        $this->assertResponseStatusCodeSame($client->getResponse()->getStatusCode());
     }
 }

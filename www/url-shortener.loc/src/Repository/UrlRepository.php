@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 /**
@@ -68,5 +69,19 @@ class UrlRepository extends ServiceEntityRepository
     {
         $cache = new FilesystemAdapter();
         return $cache->getItem($hash)->isHit();
+    }
+
+    public static function validator(Url $url, ValidatorInterface $validator): ?array
+    {
+        $errors = $validator->validate($url);
+        if (count($errors) > 0) {
+            $messages = [];
+            foreach ($errors as $violation) {
+                $messages[$violation->getPropertyPath()][] = $violation->getMessage();
+            }
+            return $messages;
+        } else {
+            return null;
+        }
     }
 }
